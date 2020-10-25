@@ -1,6 +1,6 @@
 # BudgetBot
 This is a small little budget bot using gspread and discord to help you keep track of your expense from your phone
-This program needs to first be setted up with google's api which you can download: https://developers.google.com/sheets/api/quickstart/python
+This program needs to first be setted up with google's api which you can download: https://developers.google.com/sheets/api/quickstart/python 
 This program will also need to setup a discord bot at: https://discord.com/developers/applications
 
 
