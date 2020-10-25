@@ -11,3 +11,4 @@ The !budget command will allow the user to enter in a new expense
 !getcat (!cat) will allow the user to get the data from a specific category
 !gettotal will allow the user to get the total expenditure
 !getcattotal or (!catt) will allow the user to get the total expenditure from a specific category
+
