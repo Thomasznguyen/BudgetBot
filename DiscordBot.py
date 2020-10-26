@@ -280,7 +280,7 @@ async def getsms(ctx, info):
         sendSMS(info, combinedMSG)
         print(f"sent {addName.content} {combinedMSG}")
     else:
-        sendSMS(info, combinedMSG)
+        sendSMS(personNumber, combinedMSG)
         print(f"sent {info} \"{combinedMSG}\"")
 
 
