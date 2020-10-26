@@ -2,7 +2,7 @@
 # Discord Creds
 TOKEN = "Discord Token goes here"
 PREFIX = "!"
-googleSheetsName = "BudgetApp"
+googleSheetsName = "Google Sheet Name goes here"
 
 
 # these are the row that these are on
