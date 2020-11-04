@@ -1,5 +1,7 @@
-discord.py
 gspread
 oauth2client
 GoogleSheets
 twilio
+flask
+gunicorn
+Jinja2

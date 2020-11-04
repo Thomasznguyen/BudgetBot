@@ -2,8 +2,6 @@ from twilio.rest import Client
 from config import auth_token, account_sid
 
 client = Client(account_sid, auth_token)
-
-
 def sendSMS(number, message):
     print(message)
     message = client.messages.create(
@@ -14,5 +12,6 @@ def sendSMS(number, message):
     print(message.sid)
 
 
-def getSMS():
-    message = client.messages.get()
+
+
+

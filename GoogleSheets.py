@@ -8,55 +8,75 @@ scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/au
 creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
 client = gspread.authorize(creds)
 
-sheets1 = client.open(googleSheetsName).sheet1
+googleSheets = client.open(googleSheetsName)
+
+sheets1 = googleSheets.get_worksheet(0)
+sheets2 = googleSheets.get_worksheet(1)
 
 
 def getCurrentLines(position):
-    if position == 2:
-        ExpenseCurrentLines = sheets1.acell("U2").value
-        return ExpenseCurrentLines
-    elif position == 3:
-        IncomeCurrentLines = sheets1.acell("U3").value
-        return IncomeCurrentLines
-    elif position == 4:
-        NameCurrentLines = sheets1.acell("U4").value
-        return NameCurrentLines
+    CellPos = "X" + str(position)
+    LoginCurrentLine = sheets1.acell(CellPos).value
+    return LoginCurrentLine
 
 
 def updateCurrentLines(line, position):
-    cell = "U" + str(position)
-
+    cell = "X" + str(position)
     sheets1.update(cell, str(int(line) + 1))
 
 
-# msgList is the list of our Name,Price,PaymentType,Category
-# rowNumber will be our current row of unCategorizedItems
-
-def inputUnCategorizedItem(msgList, rowNumber):
-    for i in range(len(msgList)):
-        sheets1.update_cell(rowNumber, i + 1, msgList[i])
-    print(f"inputted {msgList}")
-
-
 def resetCurrentLine(position):
-    cell = "U" + str(position)
+    cell = "X" + str(position)
     sheets1.update(cell, "2")
 
 
-def clearWeek():
-    emptyCells = ["", "", "", "", ""]
-    newCell = []
-    numOfRows = int(sheets1.row_count)
-    for i in range(numOfRows - 1):
-        newCell.append(emptyCells)
-    sheets1.update("A2:E", newCell)
-    resetCurrentLine(ExpensePosition)
+def addMessages(msgList):
+    MessageCurrentLines = getCurrentLines(IncomingMesPosition)
+    numberCol = "M" + str(MessageCurrentLines)
+    bodyCol = "N" + str(MessageCurrentLines)
+    DateCol = "O" + str(MessageCurrentLines)
+    sheets1.update(numberCol, msgList[0])
+    sheets1.update(bodyCol, msgList[1])
+    sheets1.update(DateCol, msgList[2])
+    updateCurrentLines(MessageCurrentLines, IncomingMesPosition)
+
+def sentMessageLogs(number,message):
+    MessageCurrentLines = getCurrentLines(OutMessagePosition)
+    NameCol = "R" + str(MessageCurrentLines)
+    messageCol = "S" + str(MessageCurrentLines)
+    sheets1.update(NameCol, number)
+    sheets1.update(messageCol, message)
+    updateCurrentLines(MessageCurrentLines,OutMessagePosition)
 
 
-def addIncome(msgList, rowNumber):
-    for i in range(len(msgList)):
-        sheets1.update_cell(rowNumber, i + 7, msgList[i])
-    print(f"inputted {msgList}")
+
+def addLogin(username, password):
+    LoginCurrentLines = getCurrentLines(LoginPosition)
+    usernameCol = "C" + str(LoginCurrentLines)
+    passwordCol = "D" + str(LoginCurrentLines)
+    accessCol = "E" + str(LoginCurrentLines)
+    sheets1.update(usernameCol, username)
+    sheets1.update(passwordCol, password)
+    sheets1.update(accessCol, "user")
+    updateCurrentLines(LoginCurrentLines, LoginPosition)
+
+
+def searchLogin(username,password):
+    loginData = getDataFromSheets(LOGINCELLSTART, LOGINCELLEND)
+    # code for knownPerson:
+    # False = no person is in DataBase
+    # True = username and password Matches
+    # -1 = only username is found
+    print(loginData)
+    for i in range(len(loginData)):
+        if username in loginData[i]:
+            if password in loginData[i]:
+                if "admin" in loginData[i]:
+                    return "admin"
+                return True
+            else:
+                return -1
+    return False
 
 
 def getDataFromSheets(cellStart, cellEnd):
@@ -69,10 +89,40 @@ def getDataFromCell(cell):
     return sheets1.get(str(cell))
 
 
+def checkalreadyin(name, number):
+    numberData = getDataFromSheets(CellPhoneCellStart, CellPhoneCellEnd)
+    for i in range(len(numberData)):
+        if number in numberData[i]:
+            return "foundnumber"
+        if name in numberData[i]:
+            return "foundname"
+    return False
+
+
+def findNumber(name):
+    numberData = getDataFromSheets(CellPhoneCellStart, CellPhoneCellEnd)
+    personNumber = -1
+    for i in range(len(numberData)):
+        if name in numberData[i]:
+            personNumber = numberData[i][1]
+            i = len(numberData)
+    return personNumber
+
+
+def findName(number):
+    numberData = getDataFromSheets(CellPhoneCellStart, CellPhoneCellEnd)
+    personName = -1
+    for i in range(len(numberData)):
+        if number in numberData[i]:
+            personName = numberData[i][0]
+            i = len(numberData)
+    return personName
+
+
 def addNumberToGSheets(name, number):
     NameCurrentLines = getCurrentLines(NamePosition)
-    ColY = "Y" + str(NameCurrentLines)
-    ColZ = "Z" + str(NameCurrentLines)
+    ColY = "Z" + str(NameCurrentLines)
+    ColZ = "AA" + str(NameCurrentLines)
     sheets1.update(ColY, name)
     sheets1.update(ColZ, number)
-    updateCurrentLines(NameCurrentLines, 4)
+    updateCurrentLines(NameCurrentLines, NamePosition)
